@@ -86,13 +86,13 @@ async function seed() {
   const employees = await Employee.insertMany([
     {
       employeeId: 'EMP-101',
-      name: 'Mahbubur Rahman',
+      name: 'Mahbub Alam',
       email: 'mahbub@company.com',
       department: 'Engineering',
       designation: 'Lead Software Architect',
-      whatsappName: 'Mahbubur Rahman',
-      aliases: ['Mahbub', '+8801700000001', 'MRajibH'],
-      avatarUrl: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150',
+      whatsappName: 'Mahbub Alam',
+      aliases: ['Mahbub', '+8801700000001', 'MahbubAlam'],
+      avatarUrl: '/assets/mahbub_alam.jpg',
       isActive: true,
     },
     {

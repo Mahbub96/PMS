@@ -12,43 +12,29 @@ interface MetricCardProps {
   };
   accentColor: 'indigo' | 'cyan' | 'rose' | 'amber' | 'emerald';
   progress?: number;
+  progressLabel?: string;
 }
 
 const colorMap = {
   indigo: {
-    bg: 'bg-indigo-500/10',
-    border: 'border-indigo-500/20',
-    text: 'text-indigo-400',
-    bar: 'bg-indigo-500',
-    glow: 'from-indigo-500/10',
+    iconBg: 'bg-brand-subtle text-brand-primary border border-brand-border',
+    bar: 'bg-gradient-to-r from-indigo-500 to-indigo-600',
   },
   cyan: {
-    bg: 'bg-cyan-500/10',
-    border: 'border-cyan-500/20',
-    text: 'text-cyan-400',
-    bar: 'bg-cyan-500',
-    glow: 'from-cyan-500/10',
+    iconBg: 'bg-sky-500/15 text-sky-600 dark:text-sky-400 border border-sky-500/25',
+    bar: 'bg-gradient-to-r from-cyan-500 to-sky-500',
   },
   rose: {
-    bg: 'bg-rose-500/10',
-    border: 'border-rose-500/20',
-    text: 'text-rose-400',
-    bar: 'bg-rose-500',
-    glow: 'from-rose-500/10',
+    iconBg: 'bg-rose-500/15 text-rose-600 dark:text-rose-400 border border-rose-500/25',
+    bar: 'bg-gradient-to-r from-rose-500 to-red-500',
   },
   amber: {
-    bg: 'bg-amber-500/10',
-    border: 'border-amber-500/20',
-    text: 'text-amber-400',
-    bar: 'bg-amber-500',
-    glow: 'from-amber-500/10',
+    iconBg: 'bg-amber-500/15 text-amber-600 dark:text-amber-400 border border-amber-500/25',
+    bar: 'bg-gradient-to-r from-amber-400 to-orange-500',
   },
   emerald: {
-    bg: 'bg-emerald-500/10',
-    border: 'border-emerald-500/20',
-    text: 'text-emerald-400',
-    bar: 'bg-emerald-500',
-    glow: 'from-emerald-500/10',
+    iconBg: 'bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border border-emerald-500/25',
+    bar: 'bg-gradient-to-r from-emerald-400 to-teal-500',
   },
 };
 
@@ -60,57 +46,60 @@ export const MetricCard: React.FC<MetricCardProps> = ({
   trend,
   accentColor,
   progress,
+  progressLabel = 'Recovery Rate',
 }) => {
   const c = colorMap[accentColor];
 
   return (
-    <div className="relative group overflow-hidden rounded-2xl bg-white/[0.03] hover:bg-white/[0.05] border border-white/[0.08] hover:border-white/[0.15] p-5 transition-all duration-200">
-      {/* Top subtle glow */}
-      <div className={`absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-${accentColor}-500/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300`} />
-
-      <div className="flex items-center justify-between mb-3">
-        <span className="text-[11px] font-bold uppercase tracking-wider text-slate-400">
-          {title}
-        </span>
-        <div className={`p-2 rounded-xl ${c.bg} border ${c.border} ${c.text}`}>
-          <Icon className="w-4 h-4" />
-        </div>
-      </div>
-
-      <div className="flex items-baseline gap-2.5 mb-1.5">
-        <span className="text-2xl lg:text-3xl font-extrabold font-mono text-white tracking-tight">
-          {value}
-        </span>
-        {trend && (
-          <span
-            className={`text-[11px] font-semibold px-2 py-0.5 rounded-full ${
-              trend.isPositive
-                ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20'
-                : 'bg-rose-500/10 text-rose-400 border border-rose-500/20'
-            }`}
-          >
-            {trend.value}
+    <div className="relative group overflow-hidden rounded-2xl bg-surface-card hover:bg-surface-hover/70 border border-border-default hover:border-border-active shadow-2xs hover:shadow-xs transition-all duration-200 p-5 flex flex-col justify-between dark:shadow-md dark:shadow-black/20">
+      <div>
+        {/* Top Header Row */}
+        <div className="flex items-center justify-between mb-3">
+          <span className="text-[11px] font-bold uppercase tracking-wider text-content-muted">
+            {title}
           </span>
+          <div className={`p-2 rounded-xl shrink-0 transition-transform group-hover:scale-105 ${c.iconBg}`}>
+            <Icon className="w-4 h-4" />
+          </div>
+        </div>
+
+        {/* Primary Value & Context Badge */}
+        <div className="flex items-baseline gap-2.5 mb-1">
+          <span className="text-2xl lg:text-3xl font-extrabold font-mono text-content-primary tracking-tight">
+            {value}
+          </span>
+          {trend && (
+            <span
+              className={`text-[10px] font-mono font-bold px-2 py-0.5 rounded-full border ${
+                trend.isPositive
+                  ? 'bg-status-success/10 text-status-success border-status-success/20'
+                  : 'bg-status-danger/10 text-status-danger border-status-danger/20'
+              }`}
+            >
+              {trend.value}
+            </span>
+          )}
+        </div>
+
+        {subtitle && (
+          <p className="text-xs text-content-secondary leading-snug">
+            {subtitle}
+          </p>
         )}
       </div>
 
-      {subtitle && (
-        <p className="text-xs text-slate-400 leading-tight">
-          {subtitle}
-        </p>
-      )}
-
+      {/* Optional Analytical Progress Bar */}
       {typeof progress === 'number' && (
-        <div className="mt-3.5 pt-2 border-t border-white/[0.05]">
-          <div className="w-full h-1.5 rounded-full bg-slate-800 overflow-hidden">
+        <div className="mt-3.5 pt-2.5 border-t border-border-subtle">
+          <div className="w-full h-1.5 rounded-full bg-surface-active overflow-hidden">
             <div
-              className={`h-full rounded-full ${c.bar} transition-all duration-500`}
+              className={`h-full rounded-full ${c.bar} transition-all duration-700 ease-out`}
               style={{ width: `${Math.min(100, Math.max(0, progress))}%` }}
             />
           </div>
-          <div className="flex justify-between items-center text-[10px] text-slate-500 font-mono mt-1">
-            <span>Recovery Rate</span>
-            <span className="text-slate-300 font-semibold">{progress}%</span>
+          <div className="flex justify-between items-center text-[10px] text-content-muted font-mono mt-1.5">
+            <span>{progressLabel}</span>
+            <span className="text-content-primary font-bold">{progress}%</span>
           </div>
         </div>
       )}

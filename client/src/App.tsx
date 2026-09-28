@@ -11,8 +11,10 @@ import { api } from './services/api.js';
 import { getSocket } from './services/socket.js';
 import { Navbar } from './components/Navbar.js';
 import { Sidebar } from './components/Sidebar.js';
+import { Footer } from './components/Footer.js';
 import { HeroBanner } from './components/HeroBanner.js';
 import { MetricCard } from './components/MetricCard.js';
+import { ExecutiveAnalytics } from './components/ExecutiveAnalytics.js';
 import { AttendanceTable } from './components/AttendanceTable.js';
 import { PenaltyTable } from './components/PenaltyTable.js';
 import { ConstitutionViewer } from './components/ConstitutionViewer.js';
@@ -31,7 +33,14 @@ import {
 } from 'lucide-react';
 
 export function App() {
-  const [darkMode, setDarkMode] = useState<boolean>(true);
+  const [darkMode, setDarkMode] = useState<boolean>(() => {
+    const params = new URLSearchParams(window.location.search);
+    const theme = params.get('theme');
+    if (theme) return theme === 'dark';
+    const saved = localStorage.getItem('theme');
+    if (saved) return saved === 'dark';
+    return true;
+  });
   const [activeTab, setActiveTabState] = useState<string>(() => {
     const hash = window.location.hash.replace('#', '');
     return ['dashboard', 'attendance', 'penalties', 'constitution', 'simulator'].includes(hash)
@@ -80,12 +89,15 @@ export function App() {
   const [isSyncingAttendance, setIsSyncingAttendance] = useState<boolean>(false);
   const [toastMessage, setToastMessage] = useState<{ text: string; type: 'success' | 'info' | 'error' } | null>(null);
 
-  // Sync Dark Mode class with <html>
+  // Sync Dark Mode class with <html> and persist in localStorage
   useEffect(() => {
+    localStorage.setItem('theme', darkMode ? 'dark' : 'light');
     if (darkMode) {
       document.documentElement.classList.add('dark');
+      document.documentElement.classList.remove('light');
     } else {
       document.documentElement.classList.remove('dark');
+      document.documentElement.classList.add('light');
     }
   }, [darkMode]);
 
@@ -201,11 +213,11 @@ export function App() {
   const pendingCount = penalties.filter((p) => p.status === 'PENDING').length;
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#f8fafc] dark:bg-[#090d16] text-slate-900 dark:text-slate-100 transition-colors duration-200">
+    <div className="min-h-screen flex flex-col bg-surface-app text-content-primary transition-colors duration-150">
       {/* Toast Notification */}
       {toastMessage && (
-        <div className="fixed bottom-6 right-6 z-50 flex items-center gap-2 px-4 py-3 rounded-2xl glass-panel border border-indigo-500/30 text-xs font-semibold shadow-2xl text-slate-900 dark:text-white animate-bounce">
-          <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+        <div className="fixed bottom-6 right-6 z-50 flex items-center gap-2 px-4 py-3 rounded-2xl glass-panel border border-brand-border text-xs font-semibold shadow-2xl text-content-primary animate-bounce">
+          <span className="w-2 h-2 rounded-full bg-status-success animate-pulse"></span>
           <span>{toastMessage.text}</span>
         </div>
       )}
@@ -228,61 +240,79 @@ export function App() {
           pendingPenaltiesCount={pendingCount}
         />
 
-        {/* Main Content Area */}
-        <main className="flex-1 p-4 lg:p-8 max-w-7xl mx-auto w-full">
-          {/* Dashboard Tab */}
-          {activeTab === 'dashboard' && (
+        {/* Main Content & Pinned Footer Column */}
+        <div className="flex-1 flex flex-col min-w-0">
+          <main className="flex-1 p-4 lg:p-8 max-w-7xl mx-auto w-full">
+            {/* Dashboard Tab */}
+            {activeTab === 'dashboard' && (
             <div className="space-y-8 animate-fadeIn">
-              {/* Hero Banner */}
+              {/* Executive Summary Command Console */}
               <HeroBanner
                 onRunProsecution={handleRunProsecution}
                 onOpenConstitution={() => setActiveTab('constitution')}
+                onSyncAttendance={handleSyncAttendance}
+                isSyncing={isSyncingAttendance}
                 totalCompliant={stats.attendanceOverview.totalDone}
                 totalPresent={stats.attendanceOverview.totalPresent}
                 totalPenalized={stats.attendanceOverview.totalPenalized}
+                totalLogged={stats.attendanceOverview.totalLogged}
               />
 
-              {/* KPI Cards Grid */}
+              {/* Analytical KPI Cards Grid */}
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                 <MetricCard
                   title="Total Infractions"
                   value={stats.totalPenalties}
-                  subtitle="Statutory penalties assessed"
+                  subtitle="Statutory penalties issued"
                   icon={AlertOctagon}
-                  trend={{ value: `${stats.statusBreakdown.PENDING} pending`, isPositive: false }}
+                  trend={{ value: `${stats.statusBreakdown.PENDING} pending`, isPositive: stats.statusBreakdown.PENDING === 0 }}
                   accentColor="rose"
+                  progress={stats.totalPenalties > 0 ? Math.round((stats.statusBreakdown.PAID / stats.totalPenalties) * 100) : 100}
+                  progressLabel="Settlement Rate"
                 />
 
                 <MetricCard
                   title="Fines Assessed"
                   value={`৳${stats.totalFinesIssued.toLocaleString()}`}
-                  subtitle="Total value of penalties"
+                  subtitle="Total monetary penalties assessed"
                   icon={DollarSign}
                   trend={{ value: `৳${stats.totalCollected.toLocaleString()} paid`, isPositive: true }}
                   accentColor="indigo"
+                  progress={stats.totalFinesIssued > 0 ? Math.round((stats.totalCollected / stats.totalFinesIssued) * 100) : 0}
+                  progressLabel="Collected"
                 />
 
                 <MetricCard
                   title="Outstanding Dues"
                   value={`৳${stats.totalPending.toLocaleString()}`}
-                  subtitle="Awaiting payroll/bkash settlement"
+                  subtitle="Awaiting payroll/bKash settlement"
                   icon={Clock}
                   accentColor="amber"
                   progress={stats.collectionRate}
+                  progressLabel="Recovery Rate"
                 />
 
                 <MetricCard
                   title="Today's Attendance"
-                  value={`${stats.attendanceOverview.totalPresent}/${stats.attendanceOverview.totalLogged}`}
-                  subtitle={`${stats.attendanceOverview.totalDone} sent morning "done"`}
+                  value={`${stats.attendanceOverview.totalPresent} / ${stats.attendanceOverview.totalLogged}`}
+                  subtitle={`${stats.attendanceOverview.totalDone} WhatsApp "done" verified`}
                   icon={Users}
                   trend={{
-                    value: `${stats.attendanceOverview.totalPenalized} fined`,
+                    value: `${stats.attendanceOverview.totalPenalized} penalized`,
                     isPositive: stats.attendanceOverview.totalPenalized === 0,
                   }}
                   accentColor="cyan"
+                  progress={stats.attendanceOverview.totalPresent > 0 ? Math.round((stats.attendanceOverview.totalDone / stats.attendanceOverview.totalPresent) * 100) : 100}
+                  progressLabel="Reconciled"
                 />
               </div>
+
+              {/* Data Visualizer & Telemetry Analytics Section */}
+              <ExecutiveAnalytics
+                attendance={attendance}
+                penalties={penalties}
+                stats={stats}
+              />
 
               {/* Attendance Table Preview */}
               <AttendanceTable
@@ -342,7 +372,14 @@ export function App() {
             </div>
           )}
         </main>
+
+        {/* Enterprise Governance & Telemetry Footer */}
+        <Footer
+          onNavigateTab={setActiveTab}
+          onExportConstitutionPdf={handleExportPdf}
+        />
       </div>
+    </div>
 
       {/* Payment Settlement Modal */}
       <PaymentModal

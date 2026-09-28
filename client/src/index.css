@@ -4,77 +4,122 @@
 
 @layer base {
   :root {
-    --bg-page: #f8fafc;
+    /* Light Mode: Crisp Alabaster Canvas with Pure Floating Cards */
+    --surface-app: #f8fafc;
     --surface-card: #ffffff;
-    --border-subtle: #e2e8f0;
-    --border-strong: #cbd5e1;
+    --surface-subtle: #f1f5f9;
+    --surface-hover: #eef2f6;
+    --surface-active: #e2e8f0;
+
+    /* Borders: Crisp, refined Slate */
+    --border-default: #e2e8f0;
+    --border-subtle: #f1f5f9;
+    --border-active: #cbd5e1;
+
+    /* Typography: High contrast, rich slate */
     --text-primary: #0f172a;
-    --text-secondary: #475569;
-    --text-muted: #94a3b8;
+    --text-secondary: #334155;
+    --text-muted: #64748b;
+    --text-inverted: #ffffff;
+
+    /* Brand Primary: Electric Indigo */
+    --brand-primary: #4f46e5;
+    --brand-primary-hover: #4338ca;
+    --brand-subtle: #eef2ff;
+    --brand-border: #c7d2fe;
+
+    /* Status Colors */
+    --color-success: #059669;
+    --badge-success-bg: #ecfdf5;
+    --badge-success-text: #065f46;
+    --badge-success-border: #a7f3d0;
+
+    --color-danger: #e11d48;
+    --badge-danger-bg: #fff1f2;
+    --badge-danger-text: #9f1239;
+    --badge-danger-border: #fecdd3;
+
+    --color-warning: #d97706;
+    --badge-warning-bg: #fffbeb;
+    --badge-warning-text: #92400e;
+    --badge-warning-border: #fde68a;
+
+    --color-info: #0284c7;
+    --badge-info-bg: #f0f9ff;
+    --badge-info-text: #075985;
+    --badge-info-border: #bae6fd;
   }
 
   .dark {
-    --bg-page: #080c14;
-    --surface-card: #0f172a;
-    --border-subtle: rgba(255, 255, 255, 0.08);
-    --border-strong: rgba(255, 255, 255, 0.15);
-    --text-primary: #f8fafc;
-    --text-secondary: #94a3b8;
-    --text-muted: #64748b;
+    /* Dark Mode: Cosmic Midnight Canvas with Luminous Elevated Cards */
+    /* Never dark-on-dark: cards are distinctly lighter and elevated with radiant borders */
+    --surface-app: #080c16;
+    --surface-card: #111a2e;
+    --surface-subtle: #17233d;
+    --surface-hover: #1e2e4f;
+    --surface-active: #263a63;
+
+    /* Borders: Crisp luminous glass sheens */
+    --border-default: rgba(255, 255, 255, 0.11);
+    --border-subtle: rgba(255, 255, 255, 0.06);
+    --border-active: rgba(99, 102, 241, 0.45);
+
+    /* Typography: Pure white headings, radiant silver body, crisp legibility (no dim mud!) */
+    --text-primary: #ffffff;
+    --text-secondary: #cbd5e1;
+    --text-muted: #94a3b8;
+    --text-inverted: #080c16;
+
+    /* Brand Primary: Radiant Indigo & Cyber Cyan */
+    --brand-primary: #6366f1;
+    --brand-primary-hover: #4f46e5;
+    --brand-subtle: rgba(99, 102, 241, 0.18);
+    --brand-border: rgba(99, 102, 241, 0.4);
+
+    /* Status Colors: Vivid Jewel Tones with High Contrast */
+    --color-success: #10b981;
+    --badge-success-bg: rgba(16, 185, 129, 0.16);
+    --badge-success-text: #34d399;
+    --badge-success-border: rgba(16, 185, 129, 0.32);
+
+    --color-danger: #f43f5e;
+    --badge-danger-bg: rgba(244, 63, 94, 0.16);
+    --badge-danger-text: #fb7185;
+    --badge-danger-border: rgba(244, 63, 94, 0.32);
+
+    --color-warning: #f59e0b;
+    --badge-warning-bg: rgba(245, 158, 11, 0.16);
+    --badge-warning-text: #fbbf24;
+    --badge-warning-border: rgba(245, 158, 11, 0.32);
+
+    --color-info: #0ea5e9;
+    --badge-info-bg: rgba(14, 165, 233, 0.16);
+    --badge-info-text: #38bdf8;
+    --badge-info-border: rgba(14, 165, 233, 0.32);
   }
 
   body {
-    background-color: var(--bg-page);
+    background-color: var(--surface-app);
     color: var(--text-primary);
     font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-    overflow-x: hidden;
+    transition: background-color 0.15s ease, color 0.15s ease;
   }
-}
-
-/* Linear-style Card Surfaces */
-.linear-card {
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.03) 0%, rgba(255, 255, 255, 0) 100%), #0f172a;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.4), inset 0 1px 0 0 rgba(255, 255, 255, 0.05);
-}
-
-.light .linear-card {
-  background: #ffffff;
-  border: 1px solid #e2e8f0;
-  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05);
-}
-
-/* Sleek Table Header */
-.table-header {
-  background: rgba(15, 23, 42, 0.7);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
 }
 
 /* Custom Scrollbar */
 ::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
+  width: 5px;
+  height: 5px;
 }
 ::-webkit-scrollbar-track {
   background: transparent;
 }
 ::-webkit-scrollbar-thumb {
-  background: rgba(148, 163, 184, 0.25);
+  background: var(--border-default);
   border-radius: 9999px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(148, 163, 184, 0.5);
-}
-
-/* Animations */
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(6px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-.animate-fadeIn {
-  animation: fadeIn 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  background: var(--border-active);
 }

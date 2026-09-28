@@ -21,7 +21,7 @@ export class WhatsAppTrackerService {
 
     this.recentMessages = [
       {
-        senderName: 'Mahbubur Rahman',
+        senderName: 'Mahbub Alam',
         messageText: 'done',
         timestampIso: `${dateStr}T10:12:00+06:00`,
       },

@@ -8,40 +8,41 @@ export default {
   theme: {
     extend: {
       colors: {
-        brand: {
-          50: '#eef2ff',
-          100: '#e0e7ff',
-          200: '#c7d2fe',
-          300: '#a5b4fc',
-          400: '#818cf8',
-          500: '#6366f1',
-          600: '#4f46e5',
-          700: '#4338ca',
-          800: '#3730a3',
-          900: '#312e81',
-          950: '#1e1b4b',
+        surface: {
+          app: 'var(--surface-app)',
+          card: 'var(--surface-card)',
+          subtle: 'var(--surface-subtle)',
+          hover: 'var(--surface-hover)',
+          active: 'var(--surface-active)',
         },
-        dark: {
-          surface: '#0f172a',
-          card: '#1e293b',
-          border: '#334155',
-          muted: '#64748b',
-          accent: '#38bdf8',
-        }
+        border: {
+          default: 'var(--border-default)',
+          subtle: 'var(--border-subtle)',
+          active: 'var(--border-active)',
+        },
+        content: {
+          primary: 'var(--text-primary)',
+          secondary: 'var(--text-secondary)',
+          muted: 'var(--text-muted)',
+          inverted: 'var(--text-inverted)',
+        },
+        brand: {
+          primary: 'var(--brand-primary)',
+          primaryHover: 'var(--brand-primary-hover)',
+          subtle: 'var(--brand-subtle)',
+          border: 'var(--brand-border)',
+        },
+        status: {
+          success: 'var(--color-success)',
+          danger: 'var(--color-danger)',
+          warning: 'var(--color-warning)',
+          info: 'var(--color-info)',
+        },
       },
       fontFamily: {
         sans: ['Inter', 'system-ui', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'sans-serif'],
+        mono: ['JetBrains Mono', 'ui-monospace', 'SFMono-Regular', 'Menlo', 'Monaco', 'monospace'],
       },
-      animation: {
-        'pulse-subtle': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
-        'glow': 'glow 2s ease-in-out infinite alternate',
-      },
-      keyframes: {
-        glow: {
-          '0%': { boxShadow: '0 0 10px rgba(99, 102, 241, 0.4)' },
-          '100%': { boxShadow: '0 0 25px rgba(99, 102, 241, 0.8), 0 0 40px rgba(56, 189, 248, 0.4)' },
-        }
-      }
     },
   },
   plugins: [],

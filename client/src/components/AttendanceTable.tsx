@@ -9,6 +9,7 @@ import {
   RotateCw,
   MessageSquare,
   ShieldAlert,
+  Filter,
 } from 'lucide-react';
 
 interface AttendanceTableProps {
@@ -25,6 +26,10 @@ export const AttendanceTable: React.FC<AttendanceTableProps> = ({
   const [search, setSearch] = useState('');
   const [filter, setFilter] = useState<'ALL' | 'COMPLIANT' | 'PENALIZED' | 'ABSENT'>('ALL');
 
+  const compliantCount = records.filter((r) => r.present && r.doneMessageSent).length;
+  const penalizedCount = records.filter((r) => r.penaltyTriggered).length;
+  const absentCount = records.filter((r) => !r.present).length;
+
   const filtered = records.filter((r) => {
     const matchesSearch =
       r.officialName.toLowerCase().includes(search.toLowerCase()) ||
@@ -37,18 +42,6 @@ export const AttendanceTable: React.FC<AttendanceTableProps> = ({
     if (filter === 'ABSENT') return !r.present;
     return true;
   });
-
-  const getAvatarGradient = (id: string) => {
-    const gradients = [
-      'from-cyan-500 to-blue-600',
-      'from-indigo-500 to-purple-600',
-      'from-emerald-500 to-teal-600',
-      'from-amber-500 to-orange-600',
-      'from-rose-500 to-pink-600',
-    ];
-    const index = (id.charCodeAt(id.length - 1) || 0) % gradients.length;
-    return gradients[index];
-  };
 
   const formatTime = (iso?: string | null) => {
     if (!iso) return '—';
@@ -66,64 +59,100 @@ export const AttendanceTable: React.FC<AttendanceTableProps> = ({
   };
 
   return (
-    <div className="rounded-2xl bg-white/[0.02] border border-white/[0.08] shadow-xl overflow-hidden">
-      {/* Header & Controls Bar */}
-      <div className="p-4 sm:p-5 border-b border-white/[0.08] flex flex-col md:flex-row md:items-center justify-between gap-4">
+    <div className="rounded-2xl bg-surface-card border border-border-default shadow-xs dark:shadow-md dark:shadow-black/20 overflow-hidden transition-colors">
+      {/* Consolidated Console Toolbar */}
+      <div className="p-4 sm:p-5 border-b border-border-default flex flex-col lg:flex-row lg:items-center justify-between gap-4">
         <div>
           <div className="flex items-center gap-2.5">
-            <h3 className="text-base font-bold text-white tracking-tight">
-              Daily Attendance & WhatsApp Reconciliation Log
+            <h3 className="text-base font-bold text-content-primary tracking-tight">
+              Daily Attendance & WhatsApp Reconciliation
             </h3>
-            <span className="px-2 py-0.5 rounded-full text-[10px] font-mono font-bold bg-indigo-500/15 text-cyan-400 border border-indigo-500/30">
+            <span className="px-2 py-0.5 rounded-full text-[10px] font-mono font-bold bg-brand-subtle text-brand-primary border border-brand-border">
               {records.length} Employees
             </span>
           </div>
-          <p className="text-xs text-slate-400 mt-1">
-            Biometric office punches reconciled with WhatsApp group 10:25 AM cutoff.
-          </p>
+          <div className="flex flex-wrap items-center gap-2 mt-1 text-[11px] font-mono">
+            <span className="text-content-secondary">
+              <strong className="text-content-primary">{records.length}</strong> Logged
+            </span>
+            <span className="text-content-muted">•</span>
+            <span className="text-status-success font-semibold">
+              {compliantCount} Confirmed
+            </span>
+            <span className="text-content-muted">•</span>
+            <span className="text-status-danger font-semibold">
+              {penalizedCount} Infractions
+            </span>
+            <span className="text-content-muted">•</span>
+            <span className="text-content-muted">
+              {absentCount} Leave
+            </span>
+          </div>
         </div>
 
         <div className="flex flex-wrap items-center gap-2.5">
-          {/* Search Box */}
-          <div className="relative min-w-[210px]">
-            <Search className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+          {/* Quick Search */}
+          <div className="relative min-w-[200px] flex-1 sm:flex-initial">
+            <Search className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-content-muted" />
             <input
               type="text"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              placeholder="Filter by name, ID..."
-              className="w-full pl-8 pr-3 py-1.5 rounded-xl text-xs bg-slate-900/90 border border-white/[0.08] text-white placeholder:text-slate-500 focus:outline-none focus:ring-1 focus:ring-cyan-500"
+              placeholder="Search employee, ID..."
+              className="w-full pl-8 pr-3 py-1.5 rounded-xl text-xs bg-surface-subtle border border-border-default text-content-primary placeholder:text-content-muted focus:outline-none focus:border-brand-primary transition"
             />
           </div>
 
-          {/* Filter Pills */}
-          <div className="flex items-center p-1 rounded-xl bg-slate-900/90 border border-white/[0.08] text-xs">
-            {(['ALL', 'COMPLIANT', 'PENALIZED', 'ABSENT'] as const).map((tab) => (
-              <button
-                key={tab}
-                onClick={() => setFilter(tab)}
-                className={`px-3 py-1 rounded-lg font-medium text-[11px] transition-all ${
-                  filter === tab
-                    ? 'bg-indigo-600 text-white shadow-sm font-semibold'
-                    : 'text-slate-400 hover:text-white'
-                }`}
-              >
-                {tab === 'ALL'
-                  ? 'All'
-                  : tab === 'COMPLIANT'
-                  ? 'Compliant'
-                  : tab === 'PENALIZED'
-                  ? 'Penalized'
-                  : 'Absent'}
-              </button>
-            ))}
+          {/* Segmented Filter Pills with Counters */}
+          <div className="flex items-center p-1 rounded-xl bg-surface-subtle border border-border-default text-xs">
+            <button
+              onClick={() => setFilter('ALL')}
+              className={`px-2.5 py-1 rounded-lg font-medium text-[11px] transition-all cursor-pointer ${
+                filter === 'ALL'
+                  ? 'bg-surface-card text-brand-primary font-bold shadow-2xs'
+                  : 'text-content-secondary hover:text-content-primary'
+              }`}
+            >
+              All ({records.length})
+            </button>
+            <button
+              onClick={() => setFilter('COMPLIANT')}
+              className={`px-2.5 py-1 rounded-lg font-medium text-[11px] transition-all cursor-pointer ${
+                filter === 'COMPLIANT'
+                  ? 'bg-surface-card text-status-success font-bold shadow-2xs'
+                  : 'text-content-secondary hover:text-content-primary'
+              }`}
+            >
+              Compliant ({compliantCount})
+            </button>
+            <button
+              onClick={() => setFilter('PENALIZED')}
+              className={`px-2.5 py-1 rounded-lg font-medium text-[11px] transition-all cursor-pointer ${
+                filter === 'PENALIZED'
+                  ? 'bg-surface-card text-status-danger font-bold shadow-2xs'
+                  : 'text-content-secondary hover:text-content-primary'
+              }`}
+            >
+              Penalized ({penalizedCount})
+            </button>
+            <button
+              onClick={() => setFilter('ABSENT')}
+              className={`px-2.5 py-1 rounded-lg font-medium text-[11px] transition-all cursor-pointer ${
+                filter === 'ABSENT'
+                  ? 'bg-surface-card text-content-primary font-bold shadow-2xs'
+                  : 'text-content-secondary hover:text-content-primary'
+              }`}
+            >
+              Absent ({absentCount})
+            </button>
           </div>
 
-          {/* Sync Button */}
+          {/* Biometric Sync Button */}
           <button
             onClick={onSync}
             disabled={isLoading}
-            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-medium text-slate-300 bg-white/[0.05] hover:bg-white/[0.1] border border-white/[0.08] transition active:scale-95 disabled:opacity-50"
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold text-content-secondary hover:text-content-primary bg-surface-subtle hover:bg-surface-hover border border-border-default active:scale-95 transition cursor-pointer disabled:opacity-50"
+            title="Fetch latest biometric punches from HRM"
           >
             <RotateCw className={`w-3.5 h-3.5 ${isLoading ? 'animate-spin' : ''}`} />
             <span>Sync</span>
@@ -131,11 +160,11 @@ export const AttendanceTable: React.FC<AttendanceTableProps> = ({
         </div>
       </div>
 
-      {/* Table Content */}
+      {/* Operational Table Console */}
       <div className="overflow-x-auto">
         <table className="w-full text-left border-collapse text-xs">
           <thead>
-            <tr className="bg-slate-950/60 text-[11px] font-bold uppercase tracking-wider text-slate-400 border-b border-white/[0.06]">
+            <tr className="bg-surface-subtle text-[11px] font-bold uppercase tracking-wider text-content-muted border-b border-border-default">
               <th className="py-3 px-4 sm:px-6">Employee</th>
               <th className="py-3 px-4">Biometric Punch</th>
               <th className="py-3 px-4">WhatsApp Confirmation</th>
@@ -143,106 +172,127 @@ export const AttendanceTable: React.FC<AttendanceTableProps> = ({
               <th className="py-3 px-4 sm:px-6 text-right">Adjudication</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-white/[0.04]">
+          <tbody className="divide-y divide-border-subtle">
             {filtered.length === 0 ? (
               <tr>
-                <td colSpan={5} className="py-10 text-center text-slate-400">
-                  No attendance records found matching filters.
+                <td colSpan={5} className="py-12 text-center text-content-muted">
+                  <div className="flex flex-col items-center justify-center gap-2">
+                    <Filter className="w-6 h-6 text-content-muted opacity-50" />
+                    <p className="text-xs font-medium">No employee records found matching your filter.</p>
+                  </div>
                 </td>
               </tr>
             ) : (
-              filtered.map((r) => (
-                <tr
-                  key={r.employeeId}
-                  className="hover:bg-white/[0.02] transition-colors"
-                >
-                  {/* Employee Info */}
-                  <td className="py-3.5 px-4 sm:px-6">
-                    <div className="flex items-center gap-3">
-                      <div className={`w-8 h-8 rounded-xl bg-gradient-to-br ${getAvatarGradient(r.employeeId)} p-[1px] shrink-0 shadow-sm`}>
-                        <div className="w-full h-full rounded-xl bg-slate-950 flex items-center justify-center font-bold text-white text-[11px]">
-                          {r.officialName.charAt(0)}
+              filtered.map((r) => {
+                const isMahbub = r.officialName.includes('Mahbub');
+                return (
+                  <tr
+                    key={r.employeeId}
+                    className="hover:bg-surface-hover/60 transition-colors"
+                  >
+                    {/* Employee Identity */}
+                    <td className="py-3.5 px-4 sm:px-6">
+                      <div className="flex items-center gap-3">
+                        <div className="relative shrink-0">
+                          {isMahbub ? (
+                            <img
+                              src="/assets/mahbub_alam.jpg"
+                              alt="Mahbub Alam"
+                              className="w-8 h-8 rounded-xl object-cover border border-border-default shadow-2xs"
+                            />
+                          ) : (
+                            <div className="w-8 h-8 rounded-xl bg-surface-subtle border border-border-default flex items-center justify-center font-bold text-content-primary text-xs font-mono">
+                              {r.officialName.charAt(0)}
+                            </div>
+                          )}
+                          <span
+                            className={`absolute -bottom-0.5 -right-0.5 w-2 h-2 rounded-full border border-surface-card ${
+                              r.present ? 'bg-status-success' : 'bg-content-muted'
+                            }`}
+                          />
+                        </div>
+                        <div>
+                          <div className="font-bold text-content-primary tracking-tight">
+                            {r.officialName}
+                          </div>
+                          <div className="text-[11px] text-content-muted font-mono flex items-center gap-1.5">
+                            <span>{r.employeeId}</span>
+                            <span>•</span>
+                            <span>{r.department}</span>
+                          </div>
                         </div>
                       </div>
-                      <div>
-                        <div className="font-semibold text-white tracking-tight">
-                          {r.officialName}
-                        </div>
-                        <div className="text-[11px] text-slate-400 font-mono">
-                          {r.employeeId} <span className="text-slate-600 font-sans">•</span> {r.department}
-                        </div>
-                      </div>
-                    </div>
-                  </td>
+                    </td>
 
-                  {/* Biometric Punch */}
-                  <td className="py-3.5 px-4">
-                    {r.present ? (
-                      <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 font-mono font-medium">
-                        <Clock className="w-3 h-3 text-emerald-400" />
-                        <span>{formatTime(r.checkInTime)}</span>
-                      </div>
-                    ) : (
-                      <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-white/[0.04] text-slate-400 border border-white/[0.06]">
-                        <XCircle className="w-3 h-3 text-slate-500" />
-                        <span>Absent / Leave</span>
-                      </span>
-                    )}
-                  </td>
-
-                  {/* WhatsApp Message */}
-                  <td className="py-3.5 px-4">
-                    {r.doneMessageSent ? (
-                      <div>
-                        <div className="inline-flex items-center gap-1.5 text-cyan-400 font-semibold font-mono">
-                          <MessageSquare className="w-3 h-3" />
-                          <span>"{r.doneMessageRaw || 'done'}"</span>
+                    {/* Biometric Punch */}
+                    <td className="py-3.5 px-4">
+                      {r.present ? (
+                        <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-surface-subtle border border-border-default font-mono font-medium text-content-primary">
+                          <Clock className="w-3 h-3 text-status-success" />
+                          <span>{formatTime(r.checkInTime)}</span>
                         </div>
-                        <div className="text-[10px] text-slate-400 font-mono mt-0.5">
-                          Received at {formatTime(r.doneMessageTimestamp)}
+                      ) : (
+                        <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-surface-subtle border border-border-default text-content-muted font-mono">
+                          <XCircle className="w-3 h-3" />
+                          <span>Absent / Leave</span>
+                        </span>
+                      )}
+                    </td>
+
+                    {/* WhatsApp Morning Confirmation */}
+                    <td className="py-3.5 px-4">
+                      {r.doneMessageSent ? (
+                        <div>
+                          <div className="inline-flex items-center gap-1.5 text-brand-primary font-bold font-mono">
+                            <MessageSquare className="w-3 h-3" />
+                            <span>"{r.doneMessageRaw || 'done'}"</span>
+                          </div>
+                          <div className="text-[10px] text-content-muted font-mono mt-0.5">
+                            Received at {formatTime(r.doneMessageTimestamp)}
+                          </div>
                         </div>
-                      </div>
-                    ) : r.present ? (
-                      <div className="text-rose-400 font-medium flex items-center gap-1.5">
-                        <AlertTriangle className="w-3 h-3 text-rose-400" />
-                        <span>No message before 10:25</span>
-                      </div>
-                    ) : (
-                      <span className="text-slate-500">—</span>
-                    )}
-                  </td>
+                      ) : r.present ? (
+                        <div className="text-status-danger font-medium flex items-center gap-1.5">
+                          <AlertTriangle className="w-3.5 h-3.5 shrink-0" />
+                          <span>No message before 10:25</span>
+                        </div>
+                      ) : (
+                        <span className="text-content-muted">—</span>
+                      )}
+                    </td>
 
-                  {/* Compliance Status Pill */}
-                  <td className="py-3.5 px-4">
-                    {r.present && r.doneMessageSent ? (
-                      <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 uppercase tracking-wide">
-                        <CheckCircle2 className="w-3 h-3" />
-                        <span>Compliant</span>
-                      </span>
-                    ) : r.penaltyTriggered ? (
-                      <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-bold bg-rose-500/10 text-rose-400 border border-rose-500/20 uppercase tracking-wide">
-                        <ShieldAlert className="w-3 h-3" />
-                        <span>Infraction</span>
-                      </span>
-                    ) : (
-                      <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-medium bg-white/[0.04] text-slate-400 border border-white/[0.06] uppercase tracking-wide">
-                        Excused
-                      </span>
-                    )}
-                  </td>
+                    {/* 10:25 Status Pill */}
+                    <td className="py-3.5 px-4">
+                      {r.present && r.doneMessageSent ? (
+                        <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-bold bg-status-success/10 text-status-success border border-status-success/20 uppercase tracking-wide">
+                          <CheckCircle2 className="w-3 h-3" />
+                          <span>Compliant</span>
+                        </span>
+                      ) : r.penaltyTriggered ? (
+                        <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-bold bg-status-danger/10 text-status-danger border border-status-danger/20 uppercase tracking-wide">
+                          <ShieldAlert className="w-3 h-3" />
+                          <span>Infraction</span>
+                        </span>
+                      ) : (
+                        <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-medium bg-surface-subtle text-content-muted border border-border-default uppercase tracking-wide">
+                          Excused
+                        </span>
+                      )}
+                    </td>
 
-                  {/* Adjudication Fine */}
-                  <td className="py-3.5 px-4 sm:px-6 text-right">
-                    {r.penaltyTriggered ? (
-                      <span className="inline-flex items-center font-bold font-mono text-rose-400 bg-rose-500/10 px-2.5 py-1 rounded-lg border border-rose-500/20">
-                        ৳500 Fine
-                      </span>
-                    ) : (
-                      <span className="font-mono text-slate-500">৳0</span>
-                    )}
-                  </td>
-                </tr>
-              ))
+                    {/* Adjudication Fine */}
+                    <td className="py-3.5 px-4 sm:px-6 text-right">
+                      {r.penaltyTriggered ? (
+                        <span className="inline-flex items-center font-bold font-mono text-status-danger bg-status-danger/10 border border-status-danger/20 px-2.5 py-1 rounded-lg">
+                          ৳500 Fine
+                        </span>
+                      ) : (
+                        <span className="font-mono text-content-muted">৳0</span>
+                      )}
+                    </td>
+                  </tr>
+                );
+              })
             )}
           </tbody>
         </table>
