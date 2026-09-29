@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { PenaltyRecord, PenaltyStatus } from '../types/index.js';
+import { getEmployeeAvatar } from '../utils/avatars.js';
 import {
   Search,
   CheckCircle,
@@ -234,17 +235,11 @@ export const PenaltyTable: React.FC<PenaltyTableProps> = ({
                     {/* Employee */}
                     <td className="py-3.5 px-4">
                       <div className="flex items-center gap-2.5">
-                        {isMahbub ? (
-                          <img
-                            src="/assets/mahbub_alam.jpg"
-                            alt="Mahbub Alam"
-                            className="w-7 h-7 rounded-lg object-cover border border-border-default shrink-0"
-                          />
-                        ) : (
-                          <div className="w-7 h-7 rounded-lg bg-surface-subtle border border-border-default flex items-center justify-center font-bold text-content-primary text-xs font-mono shrink-0">
-                            {p.employeeName.charAt(0)}
-                          </div>
-                        )}
+                        <img
+                          src={getEmployeeAvatar(p.employeeName, p.employeeId)}
+                          alt={p.employeeName}
+                          className="w-7 h-7 rounded-lg object-cover border border-border-default shrink-0"
+                        />
                         <div>
                           <div className="font-bold text-content-primary">
                             {p.employeeName}

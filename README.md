@@ -48,10 +48,16 @@ Missed your 10:25 AM message? You just bought the team their next round of snack
 
 ---
 
-## 📸 Dashboard Previews
+## 📸 System Previews
 
 ### 🌙 Executive Data Visualizer (Luminous Dark Mode)
 ![Dark Mode Dashboard](docs/images/dashboard_dark.png)
+
+### 💬 Live Attendance & WhatsApp "Done" Feed (Dense Split View)
+![Attendance & Done Feed Dark](docs/images/attendance_feed_dark.png)
+
+### 🎴 Colleague Member Cards (Interactive Grid View)
+![Attendance & Done Feed Grid](docs/images/attendance_feed_grid.png)
 
 ### ☀️ Executive Data Visualizer (Crisp Light Mode)
 ![Light Mode Dashboard](docs/images/dashboard_light.png)

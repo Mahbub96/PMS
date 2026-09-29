@@ -16,6 +16,7 @@ import { HeroBanner } from './components/HeroBanner.js';
 import { MetricCard } from './components/MetricCard.js';
 import { ExecutiveAnalytics } from './components/ExecutiveAnalytics.js';
 import { AttendanceTable } from './components/AttendanceTable.js';
+import { AttendanceFeedPage } from './components/AttendanceFeedPage.js';
 import { PenaltyTable } from './components/PenaltyTable.js';
 import { ConstitutionViewer } from './components/ConstitutionViewer.js';
 import { WhatsAppSimulator } from './components/WhatsAppSimulator.js';
@@ -331,15 +332,15 @@ export function App() {
             </div>
           )}
 
-          {/* Attendance Tab */}
+          {/* Attendance & Done Feed Tab */}
           {activeTab === 'attendance' && (
-            <div className="space-y-6 animate-fadeIn">
-              <AttendanceTable
-                records={attendance}
-                onSync={handleSyncAttendance}
-                isLoading={isSyncingAttendance}
-              />
-            </div>
+            <AttendanceFeedPage
+              records={attendance}
+              penalties={penalties}
+              onSync={handleSyncAttendance}
+              isLoading={isSyncingAttendance}
+              onRunProsecution={handleRunProsecution}
+            />
           )}
 
           {/* Penalties Tab */}
