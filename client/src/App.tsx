@@ -18,6 +18,7 @@ import { ExecutiveAnalytics } from './components/ExecutiveAnalytics.js';
 import { AttendanceTable } from './components/AttendanceTable.js';
 import { AttendanceFeedPage } from './components/AttendanceFeedPage.js';
 import { PenaltyTable } from './components/PenaltyTable.js';
+import { InfractionsLedgerPage } from './components/InfractionsLedgerPage.js';
 import { ConstitutionViewer } from './components/ConstitutionViewer.js';
 import { WhatsAppSimulator } from './components/WhatsAppSimulator.js';
 import { PaymentModal } from './components/PaymentModal.js';
@@ -120,6 +121,12 @@ export function App() {
       setPenalties(p);
       setAttendance(a);
       setConstitutionRules(c);
+
+      const testModal = new URLSearchParams(window.location.search).get('modal');
+      if (testModal === 'settle' && p.length > 0) {
+        const pending = p.find((item) => item.status === 'PENDING') || p[0];
+        setSelectedPenaltyForPayment(pending);
+      }
     } catch (err) {
       console.error('Error loading data:', err);
     }
@@ -345,14 +352,16 @@ export function App() {
 
           {/* Penalties Tab */}
           {activeTab === 'penalties' && (
-            <div className="space-y-6 animate-fadeIn">
-              <PenaltyTable
-                penalties={penalties}
-                onOpenPaymentModal={(p) => setSelectedPenaltyForPayment(p)}
-                onOpenDisputeModal={(p) => setSelectedPenaltyForDispute(p)}
-                onWaivePenalty={handleWaivePenalty}
-              />
-            </div>
+            <InfractionsLedgerPage
+              penalties={penalties}
+              onOpenPaymentModal={(p) => setSelectedPenaltyForPayment(p)}
+              onOpenDisputeModal={(p) => setSelectedPenaltyForDispute(p)}
+              onWaivePenalty={handleWaivePenalty}
+              onExportPdf={handleExportPdf}
+              isExportingPdf={isExportingPdf}
+              onRunProsecution={handleRunProsecution}
+              isProsecuting={isProsecuting}
+            />
           )}
 
           {/* Constitution Tab */}

@@ -167,7 +167,7 @@ export const AttendanceFeedPage: React.FC<AttendanceFeedPageProps> = ({
                 <span className="w-1.5 h-1.5 rounded-full bg-status-success animate-pulse" />
                 <span>Cloud & DevSecOps Department</span>
               </span>
-              <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-mono font-bold bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20">
+              <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-mono font-bold bg-status-warning/10 text-status-warning border border-status-warning/20">
                 <PartyPopper className="w-3 h-3" />
                 <span>Party Vault Active: ৳{partyVaultTotal.toLocaleString()} BDT</span>
               </span>
@@ -270,10 +270,10 @@ export const AttendanceFeedPage: React.FC<AttendanceFeedPageProps> = ({
               Party & Feasts Pool
             </span>
             <div className="flex items-baseline gap-2 mt-1">
-              <span className="text-2xl font-extrabold font-mono text-amber-500">
+              <span className="text-2xl font-extrabold font-mono text-status-warning">
                 +৳{partyVaultTotal.toLocaleString()}
               </span>
-              <span className="text-[10px] font-mono font-bold px-1.5 py-0.5 rounded bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20">
+              <span className="text-[10px] font-mono font-bold px-1.5 py-0.5 rounded bg-status-warning/10 text-status-warning border border-status-warning/20">
                 {penalizedCount} Infractions
               </span>
             </div>
@@ -281,7 +281,7 @@ export const AttendanceFeedPage: React.FC<AttendanceFeedPageProps> = ({
               Pizza & tea treat funded 🍕
             </p>
           </div>
-          <div className="p-2.5 rounded-xl bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20">
+          <div className="p-2.5 rounded-xl bg-status-warning/10 text-status-warning border border-status-warning/20">
             <PartyPopper className="w-5 h-5" />
           </div>
         </div>
@@ -538,7 +538,7 @@ export const AttendanceFeedPage: React.FC<AttendanceFeedPageProps> = ({
                             {/* Party Fund Impact */}
                             <td className="py-2.5 px-3 text-right font-mono whitespace-nowrap">
                               {r.penaltyTriggered ? (
-                                <span className="inline-flex items-center gap-1 font-bold text-amber-500 bg-amber-500/15 border border-amber-500/30 px-2 py-0.5 rounded-md text-[11px] whitespace-nowrap">
+                                <span className="inline-flex items-center gap-1 font-bold text-status-warning bg-status-warning/15 border border-status-warning/30 px-2 py-0.5 rounded-md text-[11px] whitespace-nowrap">
                                   <PartyPopper className="w-3 h-3" />
                                   <span>+৳500 Vault</span>
                                 </span>
@@ -623,7 +623,7 @@ export const AttendanceFeedPage: React.FC<AttendanceFeedPageProps> = ({
                       <div className="pt-2 border-t border-border-subtle flex items-center justify-between text-[11px] font-mono">
                         <span className="text-content-muted">Party Vault Impact:</span>
                         {r.penaltyTriggered ? (
-                          <span className="font-bold text-amber-500 flex items-center gap-1">
+                          <span className="font-bold text-status-warning flex items-center gap-1">
                             <PartyPopper className="w-3 h-3" />
                             +৳500 (Pizza & Tea Pool)
                           </span>
@@ -736,7 +736,7 @@ export const AttendanceFeedPage: React.FC<AttendanceFeedPageProps> = ({
                 <p className="text-[11px] text-content-secondary leading-snug">
                   Farhan Ahmed & Kamrul Islam missed the morning English message before 10:25 AM.
                 </p>
-                <div className="pt-1 flex items-center justify-between text-[10px] font-mono text-amber-600 dark:text-amber-400 font-bold">
+                <div className="pt-1 flex items-center justify-between text-[10px] font-mono text-status-warning font-bold">
                   <span>+৳1,000 to Party Vault</span>
                   <span>Treats on the way! 🍕</span>
                 </div>
